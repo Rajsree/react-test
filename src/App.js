@@ -1,6 +1,43 @@
-import React from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import axios from "axios";
+import TableComponent from "./components/Table";
 
 const App = () => {
+
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: "Title",
+        accessor: "title"
+      },
+      {
+        Header: "Author",
+        accessor: "author"
+      },
+      {
+        Header: "Comments",
+        accessor: "num_comments"
+      },
+      {
+        Header: "Points",
+        accessor: "points"
+      }
+    ],
+    []
+  );
+    //data state to store the books API data. Its initial value is an empty array
+   const [data, setData] = useState([]);
+
+    // Using useEffect to call the API once mounted and set the data.
+    useEffect(() => {
+      (async () => {
+        let result = await axios("https://hn.algolia.com/api/v1/search?query=react");
+        setData(result.data.hits);
+        console.log("result analusis :", result.data.hits);
+      })();
+    }, []);
+  
   const stories = [
     {
       title: "React",
@@ -40,6 +77,9 @@ const App = () => {
       <hr />
 
       <List list={stories} />
+
+      <TableComponent columns={columns} data={data} />
+      
     </div>
   );
 };
